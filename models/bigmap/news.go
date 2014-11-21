@@ -1,4 +1,4 @@
-package models
+package bigmap
 
 import (
 	"related-news/utils/mongo"
@@ -43,16 +43,13 @@ func UpdateNewsRelatedIds(id int64, relatedIds []int64) (err error) {
 /**
  * 初始化最近days天的数据到BigMap里
  */
-func AnalyzeNews(days int) {
+func AnalyzeNews() {
 	CleanBigMap()
 
-	if days == 0 {
-		daysConf, err := beego.AppConfig.Int("maxDays")
-		if err != nil {
-			days = 2
-		}else {
-			days = daysConf
-		}
+	days := 2
+	daysConf, err := beego.AppConfig.Int("maxDays")
+	if err == nil {
+		days = daysConf
 	}
 
 	mongodb := mongo.Collection("news")

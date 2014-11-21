@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"related-news/models"
+	"related-news/models/bigmap"
+	"related-news/models/dedup"
 	"fmt"
 )
 
@@ -14,15 +15,15 @@ func (this *NewsController) Get() {
 	data := make(map[string]interface{})
 	newsId, err := this.GetInt(":id")
 	if err == nil && newsId > 0 {
-		news, err := models.GetNews(newsId)
+		news, err := bigmap.GetNews(newsId)
 		if err != nil {
 			data["code"] = 0
 			data["message"] = err
 		} else {
 			relatedIds := news.RelatedIds
 			//if len(relatedIds) == 0 {
-			relatedIds = models.GetSimilarNewsIds(news.Id, news.Tags)
-			err := models.UpdateNewsRelatedIds(news.Id, relatedIds)
+			relatedIds = bigmap.GetSimilarNewsIds(news.Id, news.Tags)
+			err := bigmap.UpdateNewsRelatedIds(news.Id, relatedIds)
 			data["message"] = err
 			//}
 			data["code"] = 1
@@ -36,12 +37,12 @@ func (this *NewsController) Get() {
 func (this *NewsController) Append() {
 	newsId, err := this.GetInt(":id")
 	if err == nil && newsId > 0 {
-		news, err := models.GetNews(newsId)
+		news, err := bigmap.GetNews(newsId)
 		if err == nil {
 			for _, k := range news.Tags {
-				models.AppendToBigMap(k, news.Id)
+				bigmap.AppendToBigMap(k, news.Id)
 			}
-			this.RenderJson(1, nil, fmt.Sprintf("big map len: %d", models.BigMapLen()))
+			this.RenderJson(1, nil, fmt.Sprintf("big map len: %d", bigmap.BigMapLen()))
 
 		}else {
 			this.RenderJson(0, nil, err.Error())
@@ -54,13 +55,13 @@ func (this *NewsController) Append() {
 
 func (this *NewsController) Add() {
 	pk := this.GetString("pk")
-	news, err := models.GetNewsByPk(pk)
+	news, err := bigmap.GetNewsByPk(pk)
 	if err == nil {
 		for _, k := range news.Tags {
-			models.AppendToBigMap(k, news.Id)
+			bigmap.AppendToBigMap(k, news.Id)
 		}
-		relatedIds := models.GetSimilarNewsIds(news.Id, news.Tags)
-		err := models.UpdateNewsRelatedIds(news.Id, relatedIds)
+		relatedIds := bigmap.GetSimilarNewsIds(news.Id, news.Tags)
+		err := bigmap.UpdateNewsRelatedIds(news.Id, relatedIds)
 
 		mess := ""
 		if err != nil {
@@ -71,7 +72,7 @@ func (this *NewsController) Add() {
 		data["id"] = news.Id
 		data["ids"] = relatedIds
 
-		beego.Debug(models.BigMapLen())
+		beego.Debug(bigmap.BigMapLen())
 		this.RenderJson(1, data, mess)
 	}else {
 		this.RenderJson(0, nil, err.Error())
@@ -79,20 +80,31 @@ func (this *NewsController) Add() {
 }
 
 func (this *NewsController) Analyze() {
-	models.AnalyzeNews(0)
-	this.RenderJson(1, nil, fmt.Sprintf("big map len: %d", models.BigMapLen()))
+	bigmap.AnalyzeNews()
+	this.RenderJson(1, nil, fmt.Sprintf("big map len: %d", bigmap.BigMapLen()))
 }
 
 func (this *NewsController) InitNews() {
-	models.InitNewsRelated(0)
+	bigmap.InitNewsRelated(0)
 	this.RenderJson(1, nil, "")
 }
 
 func (this *NewsController) Len() {
 	data := make(map[string]interface{})
-	data["bigMapLen"] = models.BigMapLen()
+	data["bigMapLen"] = bigmap.BigMapLen()
 	this.RenderJson(1, data, "")
 }
+
+func (this *NewsController) DedupAnalyze() {
+	dedup.AnalyzeNews()
+	this.RenderJson(1, nil,
+		fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
+			dedup.TitleMapLen(),
+			dedup.ContMapLen(),
+			dedup.NewsMapLen()))
+}
+
+
 
 func (this *NewsController) RenderJson(code int, data map[string]interface{}, mess string) {
 	json := make(map[string]interface{})

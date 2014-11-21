@@ -1,4 +1,4 @@
-package models
+package bigmap
 
 var BigMap map[string][]int64
 
