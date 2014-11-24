@@ -5,6 +5,8 @@ import (
 	"related-news/models/bigmap"
 	"related-news/models/dedup"
 	"fmt"
+	"strconv"
+	"related-news/models"
 )
 
 type NewsController struct{
@@ -55,8 +57,9 @@ func (this *NewsController) Append() {
 
 func (this *NewsController) Add() {
 	pk := this.GetString("pk")
-	news, err := bigmap.GetNewsByPk(pk)
+	news, err := models.GetNewsByPk(pk)
 	if err == nil {
+		beego.Debug("====AppendToBigMap")
 		for _, k := range news.Tags {
 			bigmap.AppendToBigMap(k, news.Id)
 		}
@@ -73,6 +76,15 @@ func (this *NewsController) Add() {
 		data["ids"] = relatedIds
 
 		beego.Debug(bigmap.BigMapLen())
+
+		//
+		beego.Debug("====AppendToNewsMap")
+		dedup.AppendToNewsMap(&news)
+		beego.Debug(fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
+			dedup.TitleMapLen(),
+			dedup.ContMapLen(),
+			dedup.NewsMapLen()))
+
 		this.RenderJson(1, data, mess)
 	}else {
 		this.RenderJson(0, nil, err.Error())
@@ -91,7 +103,10 @@ func (this *NewsController) InitNews() {
 
 func (this *NewsController) Len() {
 	data := make(map[string]interface{})
-	data["bigMapLen"] = bigmap.BigMapLen()
+	data["BigMapLen"] = bigmap.BigMapLen()
+	data["TitleMapLen"] = dedup.TitleMapLen()
+	data["ContMapLen"] = dedup.ContMapLen()
+	data["NewsMapLen"] = dedup.NewsMapLen()
 	this.RenderJson(1, data, "")
 }
 
@@ -104,6 +119,49 @@ func (this *NewsController) DedupAnalyze() {
 			dedup.NewsMapLen()))
 }
 
+func (this *NewsController) DedupLen() {
+	this.RenderJson(1, nil,
+		fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
+			dedup.TitleMapLen(),
+			dedup.ContMapLen(),
+			dedup.NewsMapLen()))
+}
+
+func (this *NewsController) DedupAdd() {
+	pk := this.GetString("pk")
+	news, err := models.GetNewsByPk(pk)
+	if err == nil {
+		dedup.AppendToNewsMap(&news)
+
+		data := make(map[string]interface{})
+		data["code"] = 1
+		data["id"] = news.Id
+		mess := fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
+			dedup.TitleMapLen(),
+			dedup.ContMapLen(),
+			dedup.NewsMapLen())
+
+		this.RenderJson(1, data, mess)
+	}else {
+		this.RenderJson(0, nil, err.Error())
+	}
+}
+
+func (this *NewsController) DedupCheck() {
+	para := [8]string{"sh1", "sh2", "sh3", "sh4", "sh_t1", "sh_t2", "sh_t3", "sh_t4"}
+	sh := [8]uint16{}
+	for i, p := range para {
+		v := this.GetString(p)
+		ui, err := strconv.ParseUint(v, 10, 16)
+		if err == nil {
+			sh[i] = uint16(ui)
+		}
+	}
+	ok := dedup.Check(&sh)
+	data := make(map[string]interface{})
+	data["code"] = ok
+	this.RenderJson(1, data, "")
+}
 
 
 func (this *NewsController) RenderJson(code int, data map[string]interface{}, mess string) {

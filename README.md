@@ -37,3 +37,5 @@ go get gopkg.in/mgo.v2/bson
 5. /v1/news/len  返回bigMap的长度
 
 6. /v1/news/add?pk=primaryKey  将资讯添加到bigMap并返回资讯的相关文章IDs
+
+7. /v1/news/analyze_dedup  SimHash过虑

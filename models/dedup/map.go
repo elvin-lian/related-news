@@ -1,5 +1,9 @@
 package dedup
 
+import (
+	. "related-news/models"
+)
+
 // 去重
 var ContMap  map[uint16][]int64
 var TitleMap map[uint16][]int64
@@ -11,7 +15,7 @@ func init() {
 	NewsMap = make(map[int64][]uint16)
 }
 
-func AppendToNewsMap(news * News) {
+func AppendToNewsMap(news *News) {
 	if news.Sh1 > 0 {
 		ContMap[news.Sh1] = append(ContMap[news.Sh1], news.Id)
 		ContMap[news.Sh2] = append(ContMap[news.Sh2], news.Id)

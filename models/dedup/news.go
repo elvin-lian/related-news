@@ -6,26 +6,25 @@ import (
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
+	"fmt"
+	"errors"
+	. "related-news/models"
 )
 
-type News struct {
-	Id         int64
-	CateId     int `bson:"cate_id"`
-	Sh1        uint16 `bson:"sh1"`
-	Sh2        uint16 `bson:"sh2"`
-	Sh3        uint16 `bson:"sh3"`
-	Sh4        uint16 `bson:"sh4"`
-	ShT1       uint16 `bson:"sh_t1"`
-	ShT2       uint16 `bson:"sh_t2"`
-	ShT3       uint16 `bson:"sh_t3"`
-	ShT4       uint16 `bson:"sh_t4"`
-	CreatedAt  time.Time `bson:"created_at"`
+func init() {
+	ok, err := beego.AppConfig.Bool("autoInitNews")
+	if err == nil && ok {
+		AnalyzeNews()
+	}
 }
+
 
 /**
  * 初始化最近days天的数据到BigMap里
  */
 func AnalyzeNews() {
+	beego.Debug("准备去重相关数据")
+
 	CleanMap()
 
 	days := 7
@@ -83,32 +82,128 @@ func AnalyzeNews() {
 	beego.Debug("News Map len: ", NewsMapLen())
 }
 
-//
-//func GetSimilarNewsIds(id int64, keywords []string) (ids []int64) {
-//	ids = []int64{}
-//
-//	if len(keywords) > 0 {
-//		weight, err := beego.AppConfig.Int("similarWeight")
-//		if err != nil {
-//			weight = 5
-//		}
-//
-//		idsMap := CountBigMap(keywords)
-//		idsMapUseful := make(map[int64]int)
-//		for k, v := range idsMap {
-//			if v > weight && k != id {
-//				idsMapUseful[k] = v
-//			}
-//		}
-//		if len(idsMapUseful) > 0 {
-//			idsTmp := sortMap(idsMapUseful)
-//			if (len(idsTmp) > 6) {
-//				ids = idsTmp[:6]
-//			}else {
-//				ids = idsTmp
-//			}
-//		}
-//	}
-//	return;
-//}
+// 当有重复时，返回true
+func Check(sh *[8]uint16) int8 {
+	if sh[0] == 0 {
+		return -1
+	}
 
+	ok := checkContent(sh)
+	if !ok {
+		ok = checkTitle(sh)
+	}
+
+	if ok {
+		return 1
+	}else {
+		return 0
+	}
+}
+
+// 如果是在指定的距离内，返回true (表示有重复)
+func checkContent(sh *[8]uint16) (resp bool) {
+	maxDist, err := beego.AppConfig.Int("haimingDistanceWeight")
+	if err != nil {
+		maxDist = 10
+	}
+
+	newsIds := []int64{}
+	s1 := ""
+	for i := 0; i < 4; i++ {
+		s1 += dexbin(sh[i])
+
+		if ids, ok := ContMap[sh[i]]; ok {
+			for j := 0; j < len(ids); j++ {
+				newsIds = append(newsIds, ids[j])
+			}
+		}
+	}
+
+	newsIds = uniqSliceInt64(newsIds)
+
+	s2 := ""
+	for i := 0; i < len(newsIds); i++ {
+		if news, ok := NewsMap[newsIds[i]]; ok {
+			s2 = dexbin(news[0])+dexbin(news[1])+dexbin(news[2])+dexbin(news[3])
+			dict, err := hamming(s1, s2)
+
+			if err == nil && dict < maxDist {
+				resp = true
+				break;
+			}
+		}
+	}
+	return
+}
+
+// 如果是在指定的距离内，返回true (表示有重复)
+func checkTitle(sh *[8]uint16) (hasDeup bool) {
+	maxDist, err := beego.AppConfig.Int("haimingDistance")
+	if err != nil {
+		maxDist = 12
+	}
+
+	newsIds := []int64{}
+	s1 := ""
+	for i := 4; i < 8; i++ {
+		s1 += dexbin(sh[i])
+		if ids, ok := TitleMap[sh[i]]; ok {
+			for j := 0; j < len(ids); j++ {
+				newsIds = append(newsIds, ids[j])
+			}
+		}
+	}
+
+	newsIds = uniqSliceInt64(newsIds)
+
+	s2 := ""
+	for i := 0; i < len(newsIds); i++ {
+		if news, ok := NewsMap[newsIds[i]]; ok {
+			s2 = dexbin(news[4])+dexbin(news[5])+dexbin(news[6])+dexbin(news[7])
+			dict, err := hamming(s1, s2)
+			if err == nil && dict < maxDist {
+				hasDeup = true
+				break;
+			}
+		}
+	}
+	return
+}
+
+func hamming(s1 string, s2 string) (distance int, err error) {
+	// index by code point, not byte
+	r1 := []rune(s1)
+	r2 := []rune(s2)
+
+	if len(r1) != len(r2) {
+		err = errors.New("Hamming distance of different sized strings.")
+		return
+	}
+
+	for i, v := range r1 {
+		if r2[i] != v {
+			distance += 1
+		}
+	}
+	return
+}
+
+func uniqSliceInt64(ids []int64) (res []int64) {
+	if len(ids) < 2 {
+		res = ids
+	}else {
+		res = []int64{}
+		tmp := make(map[int64]bool)
+		for _, id := range ids {
+			if _, ok := tmp[id]; !ok {
+				tmp[id] = true
+				res = append(res, id)
+			}
+		}
+	}
+	return
+}
+
+func dexbin(i uint16) string {
+	return fmt.Sprintf("%016b", i)
+}

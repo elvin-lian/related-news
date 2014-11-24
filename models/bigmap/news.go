@@ -8,28 +8,20 @@ import (
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
+	. "related-news/models"
 )
 
-type News struct {
-	Id         int64
-	CateId     int `bson:"cate_id"`
-	Content    string
-	Tags       []string
-	CreatedAt  time.Time `bson:"created_at"`
-	RelatedIds []int64   `bson:"related_ids"`
+func init() {
+	ok, err := beego.AppConfig.Bool("autoInitNews")
+	if err == nil && ok {
+		AnalyzeNews()
+	}
 }
 
 func GetNews(id int64) (news News, err error) {
 	mongodb := mongo.Collection("news")
 	news = News{}
 	err = mongodb.Find(bson.M{"id": id}).Select(bson.M{"id":1, "content":1, "title":1, "tags":1, "related_ids": 1}).One(&news)
-	return
-}
-
-func GetNewsByPk(pk string) (news News, err error) {
-	mongodb := mongo.Collection("news")
-	news = News{}
-	err = mongodb.Find(bson.M{"_id": bson.ObjectIdHex(pk)}).Select(bson.M{"id":1, "content":1, "title":1, "tags":1, "related_ids": 1}).One(&news)
 	return
 }
 
@@ -44,6 +36,7 @@ func UpdateNewsRelatedIds(id int64, relatedIds []int64) (err error) {
  * 初始化最近days天的数据到BigMap里
  */
 func AnalyzeNews() {
+	beego.Debug("准备相关文章数据")
 	CleanBigMap()
 
 	days := 2
