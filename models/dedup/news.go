@@ -45,7 +45,7 @@ func AnalyzeNews() {
 	beginOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	beginAt := beginOfToday.AddDate(0, 0, -1*days) // days ago
 
-	beego.Debug("beginAt: ", beginAt)
+	beego.Informational("beginAt: ", beginAt)
 
 	var lastId int64 = 0
 	var allNews []News
@@ -89,7 +89,7 @@ func Check(sh *[8]uint16) int8 {
 	}
 
 	ok := checkContent(sh)
-	if !ok {
+	if !ok && sh[4] != 0 {
 		ok = checkTitle(sh)
 	}
 
