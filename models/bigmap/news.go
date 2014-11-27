@@ -168,15 +168,20 @@ func GetSimilarNewsIds(id int64, keywords []string) (ids []int64) {
 	ids = []int64{}
 
 	if len(keywords) > 0 {
-		weight, err := beego.AppConfig.Int("similarWeight")
+		max, err := beego.AppConfig.Int("similarMax")
 		if err != nil {
-			weight = 5
+			max = 8
+		}
+
+		min, err := beego.AppConfig.Int("similarMin")
+		if err != nil {
+			min = 4
 		}
 
 		idsMap := CountBigMap(keywords)
 		idsMapUseful := make(map[int64]int)
 		for k, v := range idsMap {
-			if v > weight && k != id {
+			if v >= min && v <= max && k != id {
 				idsMapUseful[k] = v
 			}
 		}
