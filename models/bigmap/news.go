@@ -187,8 +187,8 @@ func GetSimilarNewsIds(id int64, keywords []string) (ids []int64) {
 		}
 		if len(idsMapUseful) > 0 {
 			idsTmp := sortMap(idsMapUseful)
-			if (len(idsTmp) > 6) {
-				ids = idsTmp[:6]
+			if (len(idsTmp) > 5) {
+				ids = idsTmp[:5]
 			}else {
 				ids = idsTmp
 			}

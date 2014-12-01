@@ -15,7 +15,7 @@ type NewsController struct{
 
 func (this *NewsController) Get() {
 	data := make(map[string]interface{})
-	newsId, err := this.GetInt(":id")
+	newsId, err := this.GetInt64(":id")
 	if err == nil && newsId > 0 {
 		news, err := bigmap.GetNews(newsId)
 		if err != nil {
@@ -37,7 +37,7 @@ func (this *NewsController) Get() {
 }
 
 func (this *NewsController) Append() {
-	newsId, err := this.GetInt(":id")
+	newsId, err := this.GetInt64(":id")
 	if err == nil && newsId > 0 {
 		news, err := bigmap.GetNews(newsId)
 		if err == nil {
