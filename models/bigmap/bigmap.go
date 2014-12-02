@@ -1,13 +1,20 @@
 package bigmap
 
+import "sync"
+
 var BigMap map[string][]int64
 
+var lock *sync.Mutex
+
 func init() {
+	lock = &sync.Mutex{}
 	BigMap = make(map[string][]int64)
 }
 
 func AppendToBigMap(key string, id int64) {
+	lock.Lock();
 	BigMap[key] = append(BigMap[key], id)
+	lock.Unlock();
 }
 
 func CountBigMap(keywords []string) (idsMap map[int64]int) {
@@ -25,10 +32,12 @@ func CountBigMap(keywords []string) (idsMap map[int64]int) {
 	return
 }
 
-func CleanBigMap(){
+func CleanBigMap() {
+	lock.Lock();
 	BigMap = map[string][]int64{}
+	lock.Unlock();
 }
 
-func BigMapLen() int{
+func BigMapLen() int {
 	return len(BigMap)
 }

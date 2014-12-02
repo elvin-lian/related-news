@@ -52,7 +52,7 @@ func AnalyzeNews() {
 	var query *mgo.Query
 
 	for i := 0; i < maxLoop; i++ {
-		beego.Debug(i, " times")
+		//beego.Debug(i, " times")
 
 		allNews = []News{}
 
@@ -77,9 +77,9 @@ func AnalyzeNews() {
 		}
 	}
 
-	beego.Debug("Content Map len: ", ContMapLen())
-	beego.Debug("Title Map len: ", TitleMapLen())
-	beego.Debug("News Map len: ", NewsMapLen())
+	//beego.Debug("Content Map len: ", ContMapLen())
+	//beego.Debug("Title Map len: ", TitleMapLen())
+	//beego.Debug("News Map len: ", NewsMapLen())
 }
 
 // 当有重复时，返回true

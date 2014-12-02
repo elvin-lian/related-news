@@ -75,15 +75,15 @@ func (this *NewsController) Add() {
 		data["id"] = news.Id
 		data["ids"] = relatedIds
 
-		beego.Debug(bigmap.BigMapLen())
+		//beego.Debug(bigmap.BigMapLen())
 
 		//
-		beego.Debug("====AppendToNewsMap")
+		//beego.Debug("====AppendToNewsMap")
 		dedup.AppendToNewsMap(&news)
-		beego.Debug(fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
-			dedup.TitleMapLen(),
-			dedup.ContMapLen(),
-			dedup.NewsMapLen()))
+		//beego.Debug(fmt.Sprintf("title map len: %d \n content map len: %d \n news map len: %d",
+		//	dedup.TitleMapLen(),
+		//	dedup.ContMapLen(),
+		//	dedup.NewsMapLen()))
 
 		this.RenderJson(1, data, mess)
 	}else {

@@ -64,7 +64,7 @@ func AnalyzeNews() {
 	var query *mgo.Query
 
 	for i := 0; i < maxLoop; i++ {
-		beego.Debug(i, " times")
+		//beego.Debug(i, " times")
 
 		allNews = []News{}
 
@@ -92,7 +92,7 @@ func AnalyzeNews() {
 		}
 	}
 
-	beego.Debug("bigMap len: ", BigMapLen())
+	//beego.Debug("bigMap len: ", BigMapLen())
 }
 
 // 初始化最近days的相关资讯

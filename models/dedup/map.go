@@ -2,6 +2,7 @@ package dedup
 
 import (
 	. "related-news/models"
+	"sync"
 )
 
 // 去重
@@ -9,13 +10,19 @@ var ContMap  map[uint16][]int64
 var TitleMap map[uint16][]int64
 var NewsMap map[int64][]uint16
 
+var lock *sync.Mutex
+
 func init() {
+	lock = &sync.Mutex{}
+
 	ContMap = make(map[uint16][]int64)
 	TitleMap = make(map[uint16][]int64)
 	NewsMap = make(map[int64][]uint16)
 }
 
 func AppendToNewsMap(news *News) {
+	lock.Lock()
+
 	if news.Sh1 > 0 {
 		ContMap[news.Sh1] = append(ContMap[news.Sh1], news.Id)
 		ContMap[news.Sh2] = append(ContMap[news.Sh2], news.Id)
@@ -31,6 +38,8 @@ func AppendToNewsMap(news *News) {
 	}
 
 	NewsMap[news.Id] = []uint16{news.Sh1, news.Sh2, news.Sh3, news.Sh4, news.ShT1, news.ShT2, news.ShT3, news.ShT4}
+
+	lock.Unlock()
 }
 
 func CleanMap() {
