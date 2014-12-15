@@ -1,14 +1,16 @@
 package dedup
 
 import (
-	"related-news/utils/mongo"
+	"errors"
+	"fmt"
 	"time"
+
+	. "related-news/models"
+	"related-news/utils/mongo"
+
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
-	"fmt"
-	"errors"
-	. "related-news/models"
 )
 
 func init() {
@@ -17,7 +19,6 @@ func init() {
 		AnalyzeNews()
 	}
 }
-
 
 /**
  * 初始化最近days天的数据到BigMap里
@@ -52,8 +53,6 @@ func AnalyzeNews() {
 	var query *mgo.Query
 
 	for i := 0; i < maxLoop; i++ {
-		//beego.Debug(i, " times")
-
 		allNews = []News{}
 
 		if lastId == 0 {
@@ -76,10 +75,6 @@ func AnalyzeNews() {
 			}
 		}
 	}
-
-	//beego.Debug("Content Map len: ", ContMapLen())
-	//beego.Debug("Title Map len: ", TitleMapLen())
-	//beego.Debug("News Map len: ", NewsMapLen())
 }
 
 // 当有重复时，返回true

@@ -1,12 +1,14 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
-	"related-news/models/bigmap"
-	"related-news/models/dedup"
 	"fmt"
 	"strconv"
+
+	"related-news/models/bigmap"
+	"related-news/models/dedup"
 	"related-news/models"
+
+	"github.com/astaxie/beego"
 )
 
 type NewsController struct{

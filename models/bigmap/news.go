@@ -1,14 +1,17 @@
 package bigmap
 
 import (
-	"related-news/utils/mongo"
-	"related-news/utils/sorter"
 	"time"
 	"sort"
+
+	. "related-news/models"
+	"related-news/utils/mongo"
+	"related-news/utils/sorter"
+
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
-	. "related-news/models"
+
 )
 
 func init() {
@@ -64,8 +67,6 @@ func AnalyzeNews() {
 	var query *mgo.Query
 
 	for i := 0; i < maxLoop; i++ {
-		//beego.Debug(i, " times")
-
 		allNews = []News{}
 
 		if lastId == 0 {
@@ -91,8 +92,6 @@ func AnalyzeNews() {
 			}
 		}
 	}
-
-	//beego.Debug("bigMap len: ", BigMapLen())
 }
 
 // 初始化最近days的相关资讯

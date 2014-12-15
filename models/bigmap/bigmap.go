@@ -4,10 +4,10 @@ import "sync"
 
 var BigMap map[string][]int64
 
-var lock *sync.Mutex
+var lock *sync.RWMutex
 
 func init() {
-	lock = &sync.Mutex{}
+	lock = &sync.RWMutex{}
 	BigMap = make(map[string][]int64)
 }
 

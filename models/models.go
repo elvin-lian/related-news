@@ -2,8 +2,10 @@ package models
 
 import (
 	"time"
-	"gopkg.in/mgo.v2/bson"
+
 	"related-news/utils/mongo"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type News struct {
@@ -27,7 +29,7 @@ func GetNewsByPk(pk string) (news News, err error) {
 	mongodb := mongo.Collection("news")
 	news = News{}
 	err = mongodb.Find(bson.M{"_id": bson.ObjectIdHex(pk)}).
-	Select(bson.M{"id":1, "content":1, "title":1, "tags":1, "related_ids": 1, "sh1":1, "sh2":1, "sh3":1, "sh4": 1,"sh_t1":1, "sh_t2":1, "sh_t3":1, "sh_t4": 1}).
+	Select(bson.M{"id":1, "content":1, "title":1, "tags":1, "related_ids": 1, "sh1":1, "sh2":1, "sh3":1, "sh4": 1, "sh_t1":1, "sh_t2":1, "sh_t3":1, "sh_t4": 1}).
 	One(&news)
 	return
 }

@@ -1,8 +1,9 @@
 package dedup
 
 import (
-	. "related-news/models"
 	"sync"
+
+	. "related-news/models"
 )
 
 // 去重
@@ -10,10 +11,10 @@ var ContMap  map[uint16][]int64
 var TitleMap map[uint16][]int64
 var NewsMap map[int64][]uint16
 
-var lock *sync.Mutex
+var lock *sync.RWMutex
 
 func init() {
-	lock = &sync.Mutex{}
+	lock = &sync.RWMutex{}
 
 	ContMap = make(map[uint16][]int64)
 	TitleMap = make(map[uint16][]int64)

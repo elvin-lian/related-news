@@ -1,8 +1,8 @@
 package mongo
 
 import (
-	mgo "gopkg.in/mgo.v2"
 	"github.com/astaxie/beego"
+	mgo "gopkg.in/mgo.v2"
 )
 
 var session *mgo.Session
