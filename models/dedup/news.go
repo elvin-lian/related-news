@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	. "related-news/models"
-	"related-news/utils/mongo"
-
-	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
+
+	"github.com/astaxie/beego"
+
+	. "github.com/elvin-lian/related-news/models"
+	"github.com/elvin-lian/related-news/utils/mongo"
 )
 
 func init() {

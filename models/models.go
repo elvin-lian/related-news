@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"related-news/utils/mongo"
+	"github.com/elvin-lian/related-news/utils/mongo"
 
 	"gopkg.in/mgo.v2/bson"
 )

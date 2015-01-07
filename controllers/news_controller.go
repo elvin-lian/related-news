@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"related-news/models/bigmap"
-	"related-news/models/dedup"
-	"related-news/models"
-
 	"github.com/astaxie/beego"
+
+	"github.com/elvin-lian/related-news/models/bigmap"
+	"github.com/elvin-lian/related-news/models/dedup"
+	"github.com/elvin-lian/related-news/models"
 )
 
 type NewsController struct{

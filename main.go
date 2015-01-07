@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "related-news/routers"
+	_ "github.com/elvin-lian/related-news/routers"
 	"github.com/astaxie/beego"
 )
 

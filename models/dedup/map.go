@@ -3,7 +3,7 @@ package dedup
 import (
 	"sync"
 
-	. "related-news/models"
+	. "github.com/elvin-lian/related-news/models"
 )
 
 // 去重
