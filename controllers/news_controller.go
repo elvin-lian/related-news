@@ -179,6 +179,6 @@ func (this *NewsController) RenderJson(code int, data map[string]interface{}, me
 	}
 
 	this.Data["json"] = json
-	this.ServeJson()
+	this.ServeJSON()
 	this.StopRun()
 }
