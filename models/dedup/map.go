@@ -7,7 +7,7 @@ import (
 )
 
 // 去重
-var ContMap  map[uint16][]int64
+var ContMap map[uint16][]int64
 var TitleMap map[uint16][]int64
 var NewsMap map[int64][]uint16
 

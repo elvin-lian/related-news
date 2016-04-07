@@ -12,9 +12,9 @@ func init() {
 }
 
 func AppendToBigMap(key string, id int64) {
-	lock.Lock();
+	lock.Lock()
 	BigMap[key] = append(BigMap[key], id)
-	lock.Unlock();
+	lock.Unlock()
 }
 
 func CountBigMap(keywords []string) (idsMap map[int64]int) {
@@ -23,9 +23,9 @@ func CountBigMap(keywords []string) (idsMap map[int64]int) {
 		if tmpIds, ok := BigMap[k]; ok {
 			for _, id := range tmpIds {
 				if _, ok := idsMap[id]; !ok {
-					idsMap[id] = 0;
+					idsMap[id] = 0
 				}
-				idsMap[id] ++
+				idsMap[id]++
 			}
 		}
 	}
@@ -33,9 +33,9 @@ func CountBigMap(keywords []string) (idsMap map[int64]int) {
 }
 
 func CleanBigMap() {
-	lock.Lock();
+	lock.Lock()
 	BigMap = map[string][]int64{}
-	lock.Unlock();
+	lock.Unlock()
 }
 
 func BigMapLen() int {

@@ -1,8 +1,8 @@
 package bigmap
 
 import (
-	"time"
 	"sort"
+	"time"
 
 	"github.com/astaxie/beego"
 
@@ -10,8 +10,8 @@ import (
 	"github.com/elvin-lian/related-news/utils/mongo"
 	"github.com/elvin-lian/related-news/utils/sorter"
 
-	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func init() {
@@ -24,7 +24,7 @@ func init() {
 func GetNews(id int64) (news News, err error) {
 	mongodb := mongo.Collection("news")
 	news = News{}
-	err = mongodb.Find(bson.M{"id": id}).Select(bson.M{"id":1, "content":1, "title":1, "tags":1, "related_ids": 1}).One(&news)
+	err = mongodb.Find(bson.M{"id": id}).Select(bson.M{"id": 1, "content": 1, "title": 1, "tags": 1, "related_ids": 1}).One(&news)
 	return
 }
 
@@ -42,13 +42,18 @@ func AnalyzeNews() {
 	beego.Debug("准备相关文章数据")
 	CleanBigMap()
 
+	_analyzeNews("news")
+	_analyzeNews("news_prepare")
+}
+
+func _analyzeNews(collectionName string) {
 	days := 2
 	daysConf, err := beego.AppConfig.Int("maxDays")
 	if err == nil {
 		days = daysConf
 	}
 
-	mongodb := mongo.Collection("news")
+	mongodb := mongo.Collection(collectionName)
 
 	limit := 5000
 	maxLoop, err := beego.AppConfig.Int("maxLoop")
@@ -70,17 +75,17 @@ func AnalyzeNews() {
 		allNews = []News{}
 
 		if lastId == 0 {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "cate_id": bson.M{"$ne": 9}})
-		}else {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "cate_id": bson.M{"$ne": 9}})
+		} else {
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
 		}
 
-		err := query.Select(bson.M{"id":1, "tags": 1}).Limit(limit).Sort("-id").All(&allNews)
+		err := query.Select(bson.M{"id": 1, "tags": 1}).Limit(limit).Sort("-id").All(&allNews)
 		if err != nil {
 			beego.Error("query news error: ", err.Error())
-		}else {
+		} else {
 			if len(allNews) == 0 {
-				break;
+				break
 			}
 
 			for _, news := range allNews {
@@ -100,7 +105,7 @@ func InitNewsRelated(days int) {
 		daysConf, err := beego.AppConfig.Int("maxDays")
 		if err != nil {
 			days = 2
-		}else {
+		} else {
 			days = daysConf
 		}
 	}
@@ -129,21 +134,21 @@ func InitNewsRelated(days int) {
 		allNews = []News{}
 
 		if lastId == 0 {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "cate_id": bson.M{"$ne": 9}})
-		}else {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "cate_id": bson.M{"$ne": 9}})
+		} else {
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
 		}
 
-		err := query.Select(bson.M{"id":1, "tags": 1, "related_ids":1}).Limit(limit).Sort("-id").All(&allNews)
+		err := query.Select(bson.M{"id": 1, "tags": 1, "related_ids": 1}).Limit(limit).Sort("-id").All(&allNews)
 		if err != nil {
 			beego.Error("query news error: ", err.Error())
-		}else {
+		} else {
 			if len(allNews) == 0 {
-				break;
+				break
 			}
 
 			for _, news := range allNews {
-				allNewsCount ++
+				allNewsCount++
 				relatedIds := GetSimilarNewsIds(news.Id, news.Tags)
 				if len(news.RelatedIds) == 0 && len(relatedIds) == 0 {
 
@@ -151,7 +156,7 @@ func InitNewsRelated(days int) {
 					err := UpdateNewsRelatedIds(news.Id, relatedIds)
 					if err == nil {
 						beego.Debug("news.Id: ", news.Id, relatedIds)
-						hasRelatedNewsCount ++
+						hasRelatedNewsCount++
 					}
 				}
 				lastId = news.Id
@@ -186,14 +191,14 @@ func GetSimilarNewsIds(id int64, keywords []string) (ids []int64) {
 		}
 		if len(idsMapUseful) > 0 {
 			idsTmp := sortMap(idsMapUseful)
-			if (len(idsTmp) > 5) {
+			if len(idsTmp) > 5 {
 				ids = idsTmp[:5]
-			}else {
+			} else {
 				ids = idsTmp
 			}
 		}
 	}
-	return;
+	return
 }
 
 // 排序

@@ -7,7 +7,7 @@ type item struct {
 
 type Int64IntDescItem []item
 
-func Int64IntDesc(m map[int64]int) Int64IntDescItem{
+func Int64IntDesc(m map[int64]int) Int64IntDescItem {
 	ms := make(Int64IntDescItem, 0, len(m))
 
 	for k, v := range m {

@@ -6,12 +6,12 @@ import (
 
 	"github.com/astaxie/beego"
 
+	"github.com/elvin-lian/related-news/models"
 	"github.com/elvin-lian/related-news/models/bigmap"
 	"github.com/elvin-lian/related-news/models/dedup"
-	"github.com/elvin-lian/related-news/models"
 )
 
-type NewsController struct{
+type NewsController struct {
 	beego.Controller
 }
 
@@ -48,11 +48,11 @@ func (this *NewsController) Append() {
 			}
 			this.RenderJson(1, nil, fmt.Sprintf("big map len: %d", bigmap.BigMapLen()))
 
-		}else {
+		} else {
 			this.RenderJson(0, nil, err.Error())
 		}
 
-	}else {
+	} else {
 		this.RenderJson(0, nil, err.Error())
 	}
 }
@@ -88,7 +88,7 @@ func (this *NewsController) Add() {
 		//	dedup.NewsMapLen()))
 
 		this.RenderJson(1, data, mess)
-	}else {
+	} else {
 		this.RenderJson(0, nil, err.Error())
 	}
 }
@@ -144,7 +144,7 @@ func (this *NewsController) DedupAdd() {
 			dedup.NewsMapLen())
 
 		this.RenderJson(1, data, mess)
-	}else {
+	} else {
 		this.RenderJson(0, nil, err.Error())
 	}
 }
@@ -164,7 +164,6 @@ func (this *NewsController) DedupCheck() {
 	data["code"] = ok
 	this.RenderJson(1, data, "")
 }
-
 
 func (this *NewsController) RenderJson(code int, data map[string]interface{}, mess string) {
 	json := make(map[string]interface{})

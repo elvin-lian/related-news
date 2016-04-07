@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/astaxie/beego"
 
@@ -57,17 +57,17 @@ func AnalyzeNews() {
 		allNews = []News{}
 
 		if lastId == 0 {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "cate_id": bson.M{"$ne": 9}})
-		}else {
-			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status":1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "cate_id": bson.M{"$ne": 9}})
+		} else {
+			query = mongodb.Find(bson.M{"created_at": bson.M{"$gte": beginAt}, "status": 1, "id": bson.M{"$lt": lastId}, "cate_id": bson.M{"$ne": 9}})
 		}
 
-		err := query.Select(bson.M{"id":1, "sh1":1, "sh2":1, "sh3":1, "sh4": 1, "sh_t1":1, "sh_t2":1, "sh_t3":1, "sh_t4": 1}).Limit(limit).Sort("-id").All(&allNews)
+		err := query.Select(bson.M{"id": 1, "sh1": 1, "sh2": 1, "sh3": 1, "sh4": 1, "sh_t1": 1, "sh_t2": 1, "sh_t3": 1, "sh_t4": 1}).Limit(limit).Sort("-id").All(&allNews)
 		if err != nil {
 			beego.Error("query news error: ", err.Error())
-		}else {
+		} else {
 			if len(allNews) == 0 {
-				break;
+				break
 			}
 
 			for _, news := range allNews {
@@ -91,7 +91,7 @@ func Check(sh *[8]uint16) int8 {
 
 	if ok {
 		return 1
-	}else {
+	} else {
 		return 0
 	}
 }
@@ -120,12 +120,12 @@ func checkContent(sh *[8]uint16) (resp bool) {
 	s2 := ""
 	for i := 0; i < len(newsIds); i++ {
 		if news, ok := NewsMap[newsIds[i]]; ok {
-			s2 = dexbin(news[0])+dexbin(news[1])+dexbin(news[2])+dexbin(news[3])
+			s2 = dexbin(news[0]) + dexbin(news[1]) + dexbin(news[2]) + dexbin(news[3])
 			dict, err := hamming(s1, s2)
 
 			if err == nil && dict < maxDist {
 				resp = true
-				break;
+				break
 			}
 		}
 	}
@@ -155,11 +155,11 @@ func checkTitle(sh *[8]uint16) (hasDeup bool) {
 	s2 := ""
 	for i := 0; i < len(newsIds); i++ {
 		if news, ok := NewsMap[newsIds[i]]; ok {
-			s2 = dexbin(news[4])+dexbin(news[5])+dexbin(news[6])+dexbin(news[7])
+			s2 = dexbin(news[4]) + dexbin(news[5]) + dexbin(news[6]) + dexbin(news[7])
 			dict, err := hamming(s1, s2)
 			if err == nil && dict < maxDist {
 				hasDeup = true
-				break;
+				break
 			}
 		}
 	}
@@ -187,7 +187,7 @@ func hamming(s1 string, s2 string) (distance int, err error) {
 func uniqSliceInt64(ids []int64) (res []int64) {
 	if len(ids) < 2 {
 		res = ids
-	}else {
+	} else {
 		res = []int64{}
 		tmp := make(map[int64]bool)
 		for _, id := range ids {

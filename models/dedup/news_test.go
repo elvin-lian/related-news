@@ -34,7 +34,6 @@ func TestCheckTitle(t *testing.T) {
 	NewsMap[101] = []uint16{0, 0, 0, 0, 8450, 2584, 19884, 50564}
 	NewsMap[102] = []uint16{0, 0, 0, 0, 41250, 23164, 19884, 52612}
 
-
 	sh := [8]uint16{0, 0, 0, 0, 8226, 19048, 19756, 52228}
 	res := checkTitle(&sh)
 	if res {
@@ -73,4 +72,3 @@ func TestCheckContent(t *testing.T) {
 		t.Errorf("Test2: checkContent fail")
 	}
 }
-

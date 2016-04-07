@@ -7,7 +7,7 @@ import (
 func TestAppendToNewsMap(t *testing.T) {
 	CleanMap()
 	news := News{
-		Id: 102,
+		Id:  102,
 		Sh1: 41250,
 		Sh2: 23164,
 		Sh3: 19884,
